@@ -1,0 +1,5 @@
+name=SpiroPlay
+author=Charles Shapiro
+description=Spirograph Simulator
+bundleID=org.tomshiro.first
+version=0.0.0
