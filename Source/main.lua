@@ -28,8 +28,12 @@ CurrentX=0
 CurrentY=0
 CurrentRadius=40
 OuterCircleRadius=120
+CurrentArcDegrees=110
+CurrentArcStart=0
 Theta = 0
-InnerCircleCenter=geom.point.new(CurrentX,CurrentY)
+-- InnerCircleCenter=geom.point.new(CurrentX,CurrentY)
+CurrentArc=geom.arc.new(CurrentX,CurrentY,CurrentRadius,CurrentArcStart,CurrentArcDegrees,true)
+
 
 function initialize()
    gfx.setColor(gfx.kColorWhite)
@@ -55,7 +59,8 @@ function playdate.update()
    
    local newX=nil
    local newY=nil
-   gfx.drawCircleAtPoint(InnerCircleCenter,CurrentRadius)
+
+   gfx.drawArc(CurrentArc)
    
    local change,acChange=playdate.getCrankChange()   
    if change ~= 0 then
@@ -65,12 +70,14 @@ function playdate.update()
 	 Theta=0
       end     
 
-      newX=((CurrentX - CurrentRadius) * math.cos(Theta))
-      newY=((CurrentY - CurrentRadius) * math.sin(Theta))
+      newX=(CurrentX - CurrentRadius) * math.cos(Theta)
+      newY=(CurrentY - CurrentRadius) * math.sin(Theta)
       
-      InnerCircleCenter.x=newX
-      InnerCircleCenter.y=newY
+      CurrentArc.x=newX
+      CurrentArc.y=newY
+--      CurrentArc.startAngle=Theta
+      CurrentArc.endAngle=CurrentRadius+Theta
       gfx.setColor(gfx.kColorBlack)
-      gfx.drawCircleAtPoint(InnerCircleCenter,CurrentRadius)
+      gfx.drawArc(CurrentArc)
    end
 end
