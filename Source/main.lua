@@ -24,15 +24,47 @@ geom=playdate.geometry
 
 firstUpdate=true
 OuterCircle=nil
-CurrentX=0
-CurrentY=0
+
+
 CurrentRadius=40
 OuterCircleRadius=120
-CurrentArcDegrees=110
-CurrentArcStart=0
+InnerCircleRadius=50
 Theta = 0
--- InnerCircleCenter=geom.point.new(CurrentX,CurrentY)
-CurrentArc=geom.arc.new(CurrentX,CurrentY,CurrentRadius,CurrentArcStart,CurrentArcDegrees,true)
+
+CurrentX=(OuterCircleRadius - InnerCircleRadius)
+CurrentY=0
+GearCircleCenter=geom.point.new(CurrentX,CurrentY)
+InnerCircle=nil
+
+
+function drawCircle(circle)
+   for kk,vv in ipairs(circle) do
+      gfx.drawPixel(vv)
+   end
+end
+
+function drawPattern(circle)
+   for kk=1,359,60 do
+      gfx.drawCircleAtPoint(circle[kk],InnerCircleRadius)
+   end
+end
+
+
+function makeCircle(radius,center)
+   local circle={}
+   for ii=1,359 do
+      circle[ii] = findNextCirclePoint(ii,radius,center)
+   end
+   return circle
+end
+
+
+function findNextCirclePoint(angle,radius,center)
+   local radian = angle * math.pi/180
+   local ptx,pty = center.x + radius * math.cos(radian), center.y + radius * math.sin(radian)
+   local nextPoint=geom.point.new(ptx,pty)
+   return nextPoint
+end
 
 
 function initialize()
@@ -41,6 +73,9 @@ function initialize()
    gfx.setColor(gfx.kColorBlack)
    gfx.setDrawOffset(200,120)
    gfx.drawCircleAtPoint(0,0,OuterCircleRadius)
+   gfx.drawCircleAtPoint(GearCircleCenter,InnerCircleRadius)
+   InnerCircle=makeCircle(OuterCircleRadius - InnerCircleRadius,geom.point.new(0,0))
+   drawPattern(InnerCircle)
 end
 
 function playdate.update()
@@ -60,8 +95,6 @@ function playdate.update()
    local newX=nil
    local newY=nil
 
-   gfx.drawArc(CurrentArc)
-   
    local change,acChange=playdate.getCrankChange()   
    if change ~= 0 then
       
@@ -70,14 +103,5 @@ function playdate.update()
 	 Theta=0
       end     
 
-      newX=(CurrentX - CurrentRadius) * math.cos(Theta)
-      newY=(CurrentY - CurrentRadius) * math.sin(Theta)
-      
-      CurrentArc.x=newX
-      CurrentArc.y=newY
---      CurrentArc.startAngle=Theta
-      CurrentArc.endAngle=CurrentRadius+Theta
-      gfx.setColor(gfx.kColorBlack)
-      gfx.drawArc(CurrentArc)
    end
 end
